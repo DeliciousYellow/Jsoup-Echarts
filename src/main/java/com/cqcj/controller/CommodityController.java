@@ -42,8 +42,9 @@ public class CommodityController {
         }
         ArrayList<Commodity> arrCommodity = JsoupUtil.JDgetData(document);
 //        arrCommodity.forEach(System.out::println);
-        Integer count = commodityService.saveByList(arrCommodity);
 
-        return Result.ok(arrCommodity).setMessage("成功爬取并保存了"+count+"条数据");
+//        Integer count = commodityService.saveByList(arrCommodity);
+
+        return Result.ok(arrCommodity).setMessage("成功爬取了"+arrCommodity.size()+"并保存了"+0+"条数据");
     }
 }
