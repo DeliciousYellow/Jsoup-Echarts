@@ -21,6 +21,7 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
 
     @Resource
     private CommodityMapper commodityMapper;
+
     @Override
     public Integer saveByList(List<Commodity> list) {
         AtomicInteger count = new AtomicInteger();

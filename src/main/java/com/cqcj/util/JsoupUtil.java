@@ -35,6 +35,7 @@ public class JsoupUtil {
             commodity.setName(Name);
             commodity.setPrice(Price);
             commodity.setUrl(Url);
+            //添加到集合中
             arrCommodity.add(commodity);
         });
         return arrCommodity;
