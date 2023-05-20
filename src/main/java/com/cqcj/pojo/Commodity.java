@@ -22,7 +22,10 @@ import java.math.BigDecimal;
 public class Commodity {
     @TableId(type = IdType.AUTO)//自增主键字段自动赋值给对应的主键属性
     private Integer id;
+
+    private String code;
     private String name;
+    private String brand;
     private BigDecimal price;
     private String url;
 }

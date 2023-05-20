@@ -1,5 +1,6 @@
 package com.cqcj.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cqcj.mapper.CommodityMapper;
 import com.cqcj.pojo.Commodity;
@@ -26,8 +27,18 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
     public Integer saveByList(List<Commodity> list) {
         AtomicInteger count = new AtomicInteger();
         list.forEach(commodity -> {
-            int insert = commodityMapper.insert(commodity);
-            count.addAndGet(insert);
+            int insert = 0;
+            try {
+                LambdaQueryWrapper<Commodity> wrapper = new LambdaQueryWrapper<>();
+                wrapper.eq(Commodity::getCode,commodity.getCode());
+                Commodity commodity1 = commodityMapper.selectOne(wrapper);
+                if (commodity1 == null) {
+                    insert = commodityMapper.insert(commodity);
+                    count.addAndGet(insert);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
         return count.get();
     }
