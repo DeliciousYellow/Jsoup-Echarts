@@ -26,6 +26,11 @@ public class Commodity {
     private String code;
     private String name;
     private String brand;
-    private BigDecimal price;
+    private Double price;
     private String url;
+
+    private String allEvaluation;
+    private String goodEvaluation;
+    private String generalEvaluation;
+    private String poorEvaluation;
 }
