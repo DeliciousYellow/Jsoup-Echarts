@@ -1,5 +1,7 @@
 package com.cqcj.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cqcj.pojo.Commodity;
 import com.cqcj.pojo.Result;
 import com.cqcj.service.CommodityService;
@@ -12,7 +14,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * @program: Jsoup-Echarts
@@ -90,5 +92,22 @@ public class CommodityController {
             return Result.ok(arrCommodity).setMessage("成功保存了" + count + "条数据");
         }
     }
+
+    @GetMapping("/GetCommodityName")
+    public String GetCommodityName() {
+//        LambdaQueryWrapper<Commodity> wrapper = new LambdaQueryWrapper<>();
+        List<Map<String,String>> arrName = commodityService.GetNameList();
+        return JSON.toJSONString(arrName);
+    }
+
+    @GetMapping("/GetCount")
+    public String GetCount() {
+        int count = commodityService.count();
+        Map<String, Integer> map = new HashMap<>();
+        map.put("value",count);
+        return "["+JSON.toJSONString(map)+"]";
+    }
+
+
 
 }

@@ -8,7 +8,11 @@ import com.cqcj.service.CommodityService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.naming.Name;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -41,5 +45,17 @@ public class CommodityServiceImpl extends ServiceImpl<CommodityMapper, Commodity
             }
         });
         return count.get();
+    }
+
+    @Override
+    public List<Map<String,String>> GetNameList() {
+        List<Commodity> commodityList = commodityMapper.SelectNameList();
+        ArrayList<Map<String,String>> arrName = new ArrayList<>();
+        commodityList.forEach(i->{
+            Map<String, String> mapName = new HashMap<>();
+            mapName.put("name",i.getName());
+            arrName.add(mapName);
+        });
+        return arrName;
     }
 }

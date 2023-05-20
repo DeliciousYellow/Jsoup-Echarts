@@ -2,6 +2,9 @@ package com.cqcj.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.cqcj.pojo.Commodity;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * @program: Jsoup-Echarts
@@ -10,4 +13,6 @@ import com.cqcj.pojo.Commodity;
  * @create: 2023-05-12 21:33
  **/
 public interface CommodityMapper extends BaseMapper<Commodity>{
+    @Select("SELECT `name` FROM t_chart")
+    List<Commodity> SelectNameList();
 }

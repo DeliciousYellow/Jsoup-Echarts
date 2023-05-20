@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.cqcj.pojo.Commodity;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: Jsoup-Echarts
@@ -13,4 +14,5 @@ import java.util.List;
  **/
 public interface CommodityService extends IService<Commodity> {
     Integer saveByList(List<Commodity> list);
+    List<Map<String,String>> GetNameList();
 }
