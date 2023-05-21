@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cqcj.pojo.Commodity;
 import com.cqcj.pojo.Result;
 import com.cqcj.service.CommodityService;
-import com.cqcj.util.HtmlUnitUtil;
 import com.cqcj.util.JsoupUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,9 +13,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @program: Jsoup-Echarts
@@ -34,7 +35,7 @@ public class CommodityController {
     private ArrayList<Commodity> arrCommodity;
 
     @GetMapping("/GetJdByUrl/{encodeURI}/{isdetial}")
-    public Result GetJdByUrl(@PathVariable String encodeURI, @PathVariable boolean isdetial , HttpServletRequest request) {
+    public Result GetJdByUrl(@PathVariable String encodeURI, @PathVariable boolean isdetial, HttpServletRequest request) {
         String Url;
         try {
             Url = java.net.URLDecoder.decode(encodeURI, StandardCharsets.UTF_8);
@@ -50,7 +51,7 @@ public class CommodityController {
             e.printStackTrace();
             return Result.fail().setMessage("网页爬取失败");
         }
-        ArrayList<Commodity> arrCommodity = JsoupUtil.JDgetData(document,isdetial,null);
+        ArrayList<Commodity> arrCommodity = JsoupUtil.JDgetData(document, isdetial, null);
 //        arrCommodity.forEach(System.out::println);
 //        Integer count = commodityService.saveByList(arrCommodity);
         HttpSession session = request.getSession();
@@ -72,7 +73,7 @@ public class CommodityController {
                 e.printStackTrace();
                 return Result.fail().setMessage("网页爬取失败");
             }
-            arrCommodity.addAll(JsoupUtil.JDgetData(document,isdetial,name));
+            arrCommodity.addAll(JsoupUtil.JDgetData(document, isdetial, name));
         }
         HttpSession session = request.getSession();
         session.setAttribute("arrCommodity", arrCommodity);
@@ -97,7 +98,7 @@ public class CommodityController {
     @GetMapping("/GetCommodityName")
     public String GetCommodityName() {
 //        LambdaQueryWrapper<Commodity> wrapper = new LambdaQueryWrapper<>();
-        List<Map<String,String>> arrName = commodityService.GetNameList();
+        List<Map<String, String>> arrName = commodityService.GetNameList();
         return JSON.toJSONString(arrName);
     }
 
@@ -105,11 +106,17 @@ public class CommodityController {
     public String GetCount() {
         int count = commodityService.count();
         Map<String, Integer> map = new HashMap<>();
-        map.put("value",count);
-        return "["+JSON.toJSONString(map)+"]";
+        map.put("value", count);
+        return "[" + JSON.toJSONString(map) + "]";
     }
 
-    private String[] ArrCode = {"100047451618","100019459625","100031192618","100037311057","100037437645"};
+    private String[] ArrCode = {"100028235502", "100010844215", "100012341882", "100020530546", "100020530570"};
+
+    @PutMapping("/PutArrCode/{code0}/{code1}/{code2}/{code3}/{code4}")
+    public Result PutArrCode(@PathVariable String code0, @PathVariable String code1, @PathVariable String code2, @PathVariable String code3, @PathVariable String code4) {
+        this.ArrCode = new String[]{code0, code1, code2, code3, code4};
+        return Result.ok();
+    }
 
     @GetMapping("/GetAllEvaluation")
     public String GetAllEvaluation() {
@@ -117,14 +124,14 @@ public class CommodityController {
         for (int i = 0; i < ArrCode.length; i++) {
             Map<Object, Object> map = new HashMap<>();
             LambdaQueryWrapper<Commodity> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(Commodity::getCode,ArrCode[i]);
+            wrapper.eq(Commodity::getCode, ArrCode[i]);
             Commodity one = commodityService.getOne(wrapper);
             String allEvaluation = one.getAllEvaluation();
-            if (allEvaluation.contains("+")){
-                allEvaluation = allEvaluation.substring(0, allEvaluation.length()-1);
+            if (allEvaluation.contains("+")) {
+                allEvaluation = allEvaluation.substring(0, allEvaluation.length() - 1);
             }
-            map.put("value",Double.parseDouble(allEvaluation));
-            map.put("name",one.getName());
+            map.put("value", Double.parseDouble(allEvaluation));
+            map.put("name", one.getName());
             list.add(map);
         }
         return JSON.toJSONString(list);
@@ -138,37 +145,43 @@ public class CommodityController {
             Map<Object, Object> generalmap = new HashMap<>();
             Map<Object, Object> poormap = new HashMap<>();
             LambdaQueryWrapper<Commodity> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(Commodity::getCode,ArrCode[i]);
+            wrapper.eq(Commodity::getCode, ArrCode[i]);
             Commodity one = commodityService.getOne(wrapper);
             String goodEvaluation = one.getGoodEvaluation();
             String generalEvaluation = one.getGeneralEvaluation();
             String poorEvaluation = one.getPoorEvaluation();
-            if (goodEvaluation.contains("+")){
-                goodEvaluation = goodEvaluation.substring(0, goodEvaluation.length()-1);
+            if (goodEvaluation.contains("+")) {
+                goodEvaluation = goodEvaluation.substring(0, goodEvaluation.length() - 1);
             }
-            if (generalEvaluation.contains("+")){
-                generalEvaluation = generalEvaluation.substring(0, generalEvaluation.length()-1);
+            if (generalEvaluation.contains("+")) {
+                generalEvaluation = generalEvaluation.substring(0, generalEvaluation.length() - 1);
             }
-            if (poorEvaluation.contains("+")){
-                poorEvaluation = poorEvaluation.substring(0, poorEvaluation.length()-1);
+            if (poorEvaluation.contains("+")) {
+                poorEvaluation = poorEvaluation.substring(0, poorEvaluation.length() - 1);
             }
-            goodmap.put("time",one.getName());
-            goodmap.put("value",Double.parseDouble(goodEvaluation));
-            goodmap.put("name","好评");
+            goodmap.put("time", one.getName());
+            goodmap.put("value", Double.parseDouble(goodEvaluation) / 10);
+            goodmap.put("name", "好评×10");
             list.add(goodmap);
-            generalmap.put("time",one.getName());
-            generalmap.put("value",Double.parseDouble(generalEvaluation));
-            generalmap.put("name","中评");
+            generalmap.put("time", one.getName());
+            generalmap.put("value", Double.parseDouble(generalEvaluation));
+            generalmap.put("name", "中评");
             list.add(generalmap);
-            poormap.put("time",one.getName());
-            poormap.put("value",Double.parseDouble(poorEvaluation));
-            poormap.put("name","差评");
+            poormap.put("time", one.getName());
+            poormap.put("value", Double.parseDouble(poorEvaluation));
+            poormap.put("name", "差评");
             list.add(poormap);
         }
         return JSON.toJSONString(list);
     }
 
-    private String[] ArrBrand = {"OPPO","VIVO"};
+    private String[] ArrBrand = {"OPPO", "VIVO"};
+
+    @PutMapping("/PutArrBrand/{Brand0}/{Brand1}")
+    public Result PutArrBrand(@PathVariable String Brand0, @PathVariable String Brand1) {
+        this.ArrBrand = new String[]{Brand0, Brand1};
+        return Result.ok();
+    }
 
     @GetMapping("/GetCommodityByBrand")
     public String GetCommodityByBrand() {
@@ -181,69 +194,69 @@ public class CommodityController {
             Double Low = 999999999.0;
             Double Allprice = 0.0;
             LambdaQueryWrapper<Commodity> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(Commodity::getBrand,ArrBrand[i]);
+            wrapper.eq(Commodity::getBrand, ArrBrand[i]);
             List<Commodity> commodityList = commodityService.list(wrapper);
             for (int j = 0; j < commodityList.size(); j++) {
                 Commodity c = commodityList.get(j);
                 //计算品牌总销量A
                 String allEvaluation = c.getAllEvaluation();
-                if (allEvaluation.contains("+")){
-                    allEvaluation = allEvaluation.substring(0, allEvaluation.length()-1);
+                if (allEvaluation.contains("+")) {
+                    allEvaluation = allEvaluation.substring(0, allEvaluation.length() - 1);
                 }
                 ZongXiaoLiang += Double.parseDouble(allEvaluation);
                 //计算品牌好评总数量
                 String goodEvaluation = c.getGoodEvaluation();
-                if (goodEvaluation.contains("+")){
-                    goodEvaluation = goodEvaluation.substring(0, goodEvaluation.length()-1);
+                if (goodEvaluation.contains("+")) {
+                    goodEvaluation = goodEvaluation.substring(0, goodEvaluation.length() - 1);
                 }
                 HaoPing += Double.parseDouble(goodEvaluation);
                 //计算品牌差评总数量
                 String poorEvaluation = c.getPoorEvaluation();
-                if (poorEvaluation.contains("+")){
-                    poorEvaluation = poorEvaluation.substring(0, poorEvaluation.length()-1);
+                if (poorEvaluation.contains("+")) {
+                    poorEvaluation = poorEvaluation.substring(0, poorEvaluation.length() - 1);
                 }
                 ChaPing += Double.parseDouble(poorEvaluation);
                 double price = c.getPrice();
                 //计算品牌总价格
-                Allprice+=price;
+                Allprice += price;
                 //计算品牌最高价格
                 Hight = price > Hight ? price : Hight;
                 //计算品牌最低价格
                 Low = price < Low ? price : Low;
             }
-            Double average = Allprice/commodityList.size();
+            Double average = Allprice / commodityList.size();
             int i1 = String.valueOf(average).indexOf(".");
             average = Double.parseDouble(String.valueOf(average).substring(0, i1 + 3));
 
             Map<Object, Object> map1 = new HashMap<>();
-            map1.put("time","品牌总销量单位×10^3");
-            map1.put("value",ZongXiaoLiang/1000);
-            map1.put("name",ArrBrand[i]);
+            map1.put("time", "品牌总销量单位×10^3");
+            map1.put("value", ZongXiaoLiang / 1000);
+            map1.put("name", ArrBrand[i]);
             list.add(map1);
             Map<Object, Object> map2 = new HashMap<>();
-            map2.put("time","品牌好评总数量×10^3");
-            map2.put("value",HaoPing/1000);
-            map2.put("name",ArrBrand[i]);
+            map2.put("time", "品牌好评总数量×10^3");
+            map2.put("value", HaoPing / 1000);
+            map2.put("name", ArrBrand[i]);
             list.add(map2);
             Map<Object, Object> map3 = new HashMap<>();
-            map3.put("time","品牌差评总数量");
-            map3.put("value",ChaPing);
-            map3.put("name",ArrBrand[i]);
+            map3.put("time", "品牌差评总数量");
+            map3.put("value", ChaPing);
+            map3.put("name", ArrBrand[i]);
             list.add(map3);
             Map<Object, Object> map4 = new HashMap<>();
-            map4.put("time","品牌平均价格");
-            map4.put("value",average);
-            map4.put("name",ArrBrand[i]);
+            map4.put("time", "品牌平均价格");
+            map4.put("value", average);
+            map4.put("name", ArrBrand[i]);
             list.add(map4);
             Map<Object, Object> map5 = new HashMap<>();
-            map5.put("time","品牌最高价格");
-            map5.put("value",Hight);
-            map5.put("name",ArrBrand[i]);
+            map5.put("time", "品牌最高价格");
+            map5.put("value", Hight);
+            map5.put("name", ArrBrand[i]);
             list.add(map5);
             Map<Object, Object> map6 = new HashMap<>();
-            map6.put("time","品牌最低价格");
-            map6.put("value",Low);
-            map6.put("name",ArrBrand[i]);
+            map6.put("time", "品牌最低价格");
+            map6.put("value", Low);
+            map6.put("name", ArrBrand[i]);
             list.add(map6);
         }
         return JSON.toJSONString(list);
